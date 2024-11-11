@@ -3,6 +3,7 @@ from flask_restx import Api, Resource, fields
 from flask_cors import CORS
 import torch
 import torch.nn.functional as F
+import pickle
 from transformers import DistilBertTokenizer, DistilBertForSequenceClassification, logging as transformers_logging
 import warnings
 
@@ -12,7 +13,6 @@ warnings.filterwarnings("ignore", category=FutureWarning, module="torch")
 
 # Initialize the Flask app
 app = Flask(__name__)
-
 
 # Enable CORS on the Flask app
 CORS(app)
@@ -27,10 +27,16 @@ predict_model = api.model('PredictModel', {
     'max_len': fields.Integer(description='The maximum length of the text for tokenization', default=64)
 })
 
-# Load the tokenizer and model
-tokenizer = DistilBertTokenizer.from_pretrained('distilbert-base-uncased')
+# Load the tokenizer and model from .pkl files
+with open('model/tokenizer.pkl', 'rb') as f:
+    tokenizer = pickle.load(f)
+
+with open('model/sentiment_model.pkl', 'rb') as f:
+    model_state_dict = pickle.load(f)
+
+# Initialize the model and load the state_dict
 model = DistilBertForSequenceClassification.from_pretrained('distilbert-base-uncased', num_labels=3)
-model.load_state_dict(torch.load('model/sentiment_model.pth'))
+model.load_state_dict(model_state_dict)
 model.eval()
 
 # Define a helper function to get prediction insights
@@ -154,4 +160,4 @@ class ModelInfo(Resource):
 
 # Start the Flask server
 if __name__ == '__main__':
-    app.run(debug = True)
+    app.run(debug=True)
