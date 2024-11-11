@@ -1,5 +1,6 @@
 from flask import Flask, jsonify, request
 from flask_restx import Api, Resource, fields
+from flask_cors import CORS
 import torch
 import torch.nn.functional as F
 from transformers import DistilBertTokenizer, DistilBertForSequenceClassification, logging as transformers_logging
@@ -11,6 +12,10 @@ warnings.filterwarnings("ignore", category=FutureWarning, module="torch")
 
 # Initialize the Flask app
 app = Flask(__name__)
+
+
+# Enable CORS on the Flask app
+CORS(app)
 
 # Initialize Flask-RESTPlus API
 api = Api(app, version='1.0', title='Sentiment Analysis API',
