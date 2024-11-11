@@ -6,9 +6,15 @@ const App = () => {
   const [text, setText] = useState("");
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [maxLength, setMaxLength] = useState(64); // Allow custom length
 
   const handleTextChange = (e) => {
     setText(e.target.value);
+  };
+
+  const handleMaxLengthChange = (e) => {
+    setMaxLength(e.target.value);
   };
 
   const handleSubmit = async (e) => {
@@ -19,15 +25,18 @@ const App = () => {
     }
 
     setLoading(true);
+    setError(null);
 
     try {
       // Send POST request to Flask API
       const response = await axios.post("http://127.0.0.1:5000/predict", {
         text,
+        max_len: Number(maxLength), // Pass custom max length
       });
       setResult(response.data);
     } catch (error) {
       console.error("There was an error fetching the prediction:", error);
+      setError("Failed to get prediction. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -45,10 +54,25 @@ const App = () => {
           placeholder="Enter text here"
         />
         <br />
+
+        <label>
+          Max Text Length:
+          <input
+            type="number"
+            value={maxLength}
+            onChange={handleMaxLengthChange}
+            min="10"
+            max="512"
+          />
+        </label>
+        <br />
+
         <button type="submit" disabled={loading}>
           {loading ? "Loading..." : "Analyze Sentiment"}
         </button>
       </form>
+
+      {error && <div className="error">{error}</div>}
 
       {result && (
         <div className="result">
