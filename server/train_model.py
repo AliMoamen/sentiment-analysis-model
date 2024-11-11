@@ -93,8 +93,9 @@ def train_model(model, data_loader, optimizer, loss_fn, device, scheduler=None, 
         if scheduler:
             scheduler.step()
 
-    # Save the model after training
-    torch.save(model.state_dict(), 'sentiment_model.pth')
+    # Save the model and tokenizer after training
+    model.save_pretrained('sentiment_model')
+    tokenizer.save_pretrained('sentiment_model')
 
 def evaluate_model(model, data_loader):
     model = model.eval()
@@ -151,3 +152,7 @@ if __name__ == '__main__':
     # Evaluate the model
     accuracy, f1 = evaluate_model(model, test_data_loader)
     print(f"Accuracy: {accuracy}, F1-Score: {f1}")
+
+    # Load the trained model and tokenizer (if needed for inference)
+    model = DistilBertForSequenceClassification.from_pretrained('sentiment_model', num_labels=3)
+    tokenizer = DistilBertTokenizer.from_pretrained('sentiment_model')
