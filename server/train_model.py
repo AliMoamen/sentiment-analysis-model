@@ -2,11 +2,15 @@ import pandas as pd
 import torch
 from torch.utils.data import DataLoader, Dataset
 from sklearn.metrics import accuracy_score, f1_score
-from transformers import DistilBertTokenizer, DistilBertForSequenceClassification, AdamW
-from torch.optim import lr_scheduler
+from transformers import DistilBertTokenizer, DistilBertForSequenceClassification
+from torch.optim import AdamW, lr_scheduler
 from torch.nn import CrossEntropyLoss
 from tqdm import tqdm
+import warnings
 from torch.cuda.amp import GradScaler, autocast  # For mixed precision
+
+# Suppress the weight initialization warning for clarity
+warnings.filterwarnings('ignore', category=UserWarning, message="Some weights of .* were not initialized from the model checkpoint")
 
 # Define a custom Dataset class
 class SentimentDataset(Dataset):
@@ -91,7 +95,6 @@ def train_model(model, data_loader, optimizer, loss_fn, device, scheduler=None, 
 
     # Save the model after training
     torch.save(model.state_dict(), 'sentiment_model.pth')
-
 
 def evaluate_model(model, data_loader):
     model = model.eval()
