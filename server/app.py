@@ -30,7 +30,7 @@ predict_model = api.model('PredictModel', {
 # Load the tokenizer and model
 tokenizer = DistilBertTokenizer.from_pretrained('distilbert-base-uncased')
 model = DistilBertForSequenceClassification.from_pretrained('distilbert-base-uncased', num_labels=3)
-model.load_state_dict(torch.load('model/sentiment_model.pth', weights_only=True))
+model.load_state_dict(torch.load('model/sentiment_model.pth', weights_only=False))
 model.eval()
 
 # Define a helper function to get prediction insights
