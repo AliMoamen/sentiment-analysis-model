@@ -1,0 +1,12 @@
+{
+  "name": "sentiment-analysis-model",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "concurrently \"npm run start-client\" \"npm run start-server\"",
+    "start-client": "cd client && npm install && npm run dev",
+    "start-server": "cd server && pip install -r requirements.txt && python app.py"
+  },
+  "devDependencies": {
+    "concurrently": "^7.0.0"
+  }
+}
